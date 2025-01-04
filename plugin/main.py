@@ -36,21 +36,21 @@ class ChatGPT(Flox):
 
         except FileNotFoundError:
             self.prompts = None
-            logging.error("Unable to open system_messages.csv")
+            logging.error("无法打开system_messages.csv")
 
     def query(self, query: str) -> None:
         if not self.api_key:
             self.add_item(
-                title="Unable to load the API key",
+                title="无法加载API密钥",
                 subtitle=(
-                    "Please make sure you've added a valid API key in the settings"
+                    "请确保您已在设置中添加了有效的API密钥"
                 ),
             )
             return
         if self.prompts is None:
             self.add_item(
-                title="Unable to load the system prompts from CSV",
-                subtitle="Please validate that the plugins folder contains a valid system_prompts.csv",  # noqa: E501
+                title="无法从CSV加载系统提示",
+                subtitle="请确认插件文件夹中包含有效的system_prompts.csv文件",  # noqa: E501
                 method=self.open_plugin_folder,
             )
             return
@@ -72,14 +72,14 @@ class ChatGPT(Flox):
                 short_answer = self.ellipsis(answer, 30)
 
                 self.add_item(
-                    title="Copy to clipboard",
+                    title="复制到剪贴板",
                     subtitle=f"Answer: {short_answer}",
                     method=self.copy_answer,
                     parameters=[answer],
                 )
 
                 self.add_item(
-                    title="Open in text editor",
+                    title="在文本编辑器中打开",
                     subtitle=f"Answer: {short_answer}",
                     method=self.open_in_editor,
                     parameters=[filename, answer],
@@ -88,8 +88,8 @@ class ChatGPT(Flox):
 
         else:
             self.add_item(
-                title=f"Type your prompt and end with {self.prompt_stop}",
-                subtitle=f"Current model: {self.model}",
+                title=f"输入您的Prompt, 并以 {self.prompt_stop} 结尾",
+                subtitle=f"当前模型: {self.model}",
             )
         return
 
@@ -120,7 +120,7 @@ class ChatGPT(Flox):
         data = json.dumps(body)
 
         prompt_timestamp = datetime.now()
-        logging.debug(f"Sending request with data: {data}")
+        logging.debug(f"发送请求数据: {data}")
         try:
             response = requests.request(
                 "POST", url, headers=headers, data=data, proxies=PROXIES
@@ -139,10 +139,10 @@ class ChatGPT(Flox):
                 result += entry["message"]["content"]
         else:
             self.add_item(
-                title="An error occurred", subtitle=response_json["error"]["message"]
+                title="发生错误", subtitle=response_json["error"]["message"]
             )
             logging.error(
-                f"API returned {response.status_code} with message: {response_json}"
+                f"API 返回 {response.status_code}，消息: {response_json}"
             )
         return result, prompt_timestamp, answer_timestamp
 
